@@ -94,7 +94,10 @@ const GBridge = {
             console.log('>>> commands: ' + commands);
         }
 
-        GCanvasModule.render(commands, componentId, callback);
+        callGCanvasLinkNative(componentId, 0x20000001, commands);
+		if(callback){
+		callback();
+		}
     },
 
     callExtendCallNative: isWeexIOS ? function (componentId, cmdArgs) {
