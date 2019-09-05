@@ -1,5 +1,5 @@
 ### Canvas 
-uni Canvas插件基于[GCanvas](https://github.com/alibaba/GCanvas)实现了微信小程序[CanvasContext API](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.html),  W3C [WebGL API](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API)
+uni Canvas插件基于[GCanvas](https://github.com/alibaba/GCanvas)实现了微信小程序[CanvasContext API](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.html),  W3C [WebGL API](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API),
 该工程为uni Canvas插件使用演示demo
 
 ### 使用
@@ -23,6 +23,7 @@ import {
 ```
 ## API支持情况
 * Canvas API
+
 API|Status|
 :-|:-|
 createOffscreenCanvas|❌
@@ -36,6 +37,7 @@ Color|✅
 Image|✅
 OffscreenCanvas|❌
 * CanvasContext API
+
 API|Status|
 :-|:-|
 arc|✅
