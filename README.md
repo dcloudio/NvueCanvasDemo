@@ -23,6 +23,7 @@ import {
 ```
 ## API支持情况
 * Canvas API
+
 API|Status|
 :-|:-|
 createOffscreenCanvas|❌
@@ -36,6 +37,7 @@ Color|✅
 Image|✅
 OffscreenCanvas|❌
 * CanvasContext API
+
 API|Status|
 :-|:-|
 arc|✅
