@@ -1,0 +1,516 @@
+<template>
+	<view @viewappear="handleViewappear" ref="test" style="background-color: #FFF">
+		<gcanvas class="canvas" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend" ref="gcanvess" fillStyle="#EEEEEE">
+		</gcanvas>
+		<view class="btn">
+			<text class="btn-text" @click="handleArc">Arc</text>
+			<text class="btn-text" @click="handleArcTo">ArcTo</text>
+		</view>
+		<view class="btn">
+			<text class="btn-text" @click="handleBeginPath">beginPath</text>
+			<text class="btn-text" @click="handleBezierCurveTo">BezierCurveTo</text>
+		</view>
+		<view class="btn">
+			<text class="btn-text" @click="handleClearRect">ClearRect</text>
+			<text class="btn-text" @click="handleClip">clip</text>
+		</view>
+		<view class="btn">
+			<text class="btn-text" @click="handleClosePath">closePath</text>
+			<text class="btn-text" @click="handleCreatePattern">createPattern</text>
+		</view>
+		<view class="btn">
+			<text class="btn-text" @click="handleCircularGradient">CircularGradient</text>
+			<text class="btn-text" @click="handleLinearGradient">LinearGradient</text>
+		</view>
+		<view class="btn">
+			<text class="btn-text" @click="handleDrawImage">drawImage</text>
+			<text class="btn-text" @click="handleFill">Fill</text>
+		</view>
+		<view class="btn">
+			<text class="btn-text" @click="handleFillRect">FillRect</text>
+			<text class="btn-text" @click="handleFillText">FillText&SetFont</text>
+		</view>
+		<view class="btn">
+			<text class="btn-text" @click="handleLine">line test</text>
+			<text class="btn-text" @click="handleMiterLimit">miterLimit</text>
+		</view>
+		<view class="btn">
+			<text class="btn-text" @click="handleTextAlign">TextAlign</text>
+			<text class="btn-text" @click="handleTextBaseline">TextBaseline</text>
+		</view>
+		<view class="btn">
+			<text class="btn-text" @click="handleMeasureText">measureText</text>
+			<text class="btn-text" @click="handleQuadraticCurveTo">quadraticCurveTo</text>
+		</view>
+		<view class="btn">
+			<text class="btn-text" @click="handleDraw">Draw</text>
+			<text class="btn-text" @click="handleGetImageData">获取图像数据</text>
+		</view>
+		<view class="btn">
+			<text class="btn-text" @click="handleCanvasToTempFilePath">保存canvas到文件</text>
+		</view>
+	</view>
+</template>
+<style type="text/css" scoped>
+	.canvas {
+		width: 750rpx;
+		height: 300rpx;
+		background-color: white;
+		margin-bottom: 10rpx;
+	}
+	.btn {
+		flex-direction: row;
+		margin-bottom: 10rpx;
+	}
+
+	.btn-text:active {
+		background-color: #0f0;
+	}
+
+	.btn-text {
+		padding-top: 20rpx;
+		padding-bottom: 20rpx;
+		margin-left: 20rpx;
+		margin-right: 20rpx;
+		flex-direction: row;
+		background-color: #ff9537;
+
+		border-radius: 10rpx;
+		width: 335rpx;
+		text-align: center;
+		color: #fff;
+	}
+</style>
+<script>
+	import {
+		enable,
+		WeexBridge
+	} from '../../gcanvas/index.js';
+
+	var modal = weex.requireModule("modal");
+	module.exports = {
+		data: {
+			startX: 0,
+			startY: 0,
+			currentX: 0,
+			currentY: 0,
+			context: {},
+			canvasObj: {}
+		},
+		onReady: function(e) {
+			//以下是核心代代码，需在合适的时机调用，我这里在自己定义的界面加载完成的全局事件中调用了
+			/*获取元素引用*/
+			var ganvas = this.$refs["gcanvess"];
+			/*通过元素引用获取canvas对象*/
+			this.canvasObj = enable(ganvas, {
+				bridge: WeexBridge
+			});
+			//var ctx = gcanvas.getContext("2d");
+			/*获取绘图所需的上下文，目前不支持3d*/
+			this.context = this.canvasObj.getContext('2d');
+			console.log("handleViewappear--end" + typeof(ctx));
+		},
+		methods: {
+			handleViewappear: function(e) {
+				//以下是核心代代码，需在合适的时机调用，我这里在自己定义的界面加载完成的全局事件中调用了
+				/*获取元素引用*/
+				var ganvas = this.$refs["gcanvess"];
+				/*通过元素引用获取canvas对象*/
+				this.canvasObj = enable(ganvas, {
+					bridge: WeexBridge
+				});
+				//var ctx = gcanvas.getContext("2d");
+				/*获取绘图所需的上下文，目前不支持3d*/
+				this.context = this.canvasObj.getContext('2d');
+				console.log("handleViewappear--end" + typeof(ctx));
+			},
+			handleTest (){
+				var ctx = this.context;
+				ctx.moveTo(0,0);
+				ctx.lineTo(50, 50);
+				ctx.moveTo(100, 100);
+				ctx.lineTo(200, 200);
+				ctx.stroke();
+				ctx.draw();
+			},
+			handleGetImageData() {
+				var ctx = this.context;
+				const metrics = ctx.getImageData(0, 0, 40, 20, (res) => {
+					console.log("getImageData:[width:]" + res.width) // 100
+					console.log("getImageData:[width:]" + res.height) // 100
+					//console.log("getImageData:[width:]" + res.data instanceof Uint8ClampedArray) // true
+					console.log("getImageData:[width:]" + res.data.length) // 100 * 100 * 4
+
+					var z = res.data;
+					var msg = '[';
+					console.log("image data length:" + z.length);
+					for (var i = 0; i < z.length; i++) {
+						msg += z[i] + ","
+					}
+					msg += "]";
+					console.log(msg);
+					ctx.putImageData(res.data, 100, 100, 40, 20, function(res) {
+						console.log(res)
+					});
+				});
+			},
+			handleCanvasToTempFilePath() {
+				var ctx = this.context;
+				ctx.toTempFilePath(
+					0,
+					0,
+					300,
+					200,
+					300,
+					200,
+					"",
+					1,
+					function(res) {
+						plus.nativeUI.alert("文件位置:"+res.tempFilePath);
+					}
+				);
+			},
+			handleMeasureText() {
+				var ctx = this.context;
+				ctx.font = 'italic bold 20px cursive'
+				const metrics = ctx.measureText('Hello World')
+				plus.nativeUI.alert("字符长度:"+metrics.width);
+			},
+			handleDraw() {
+				var context = this.context;
+				context.setStrokeStyle("#00ff00")
+				context.setLineWidth(5)
+				context.rect(0, 0, 200, 200)
+				context.stroke()
+				context.setStrokeStyle("#ff0000")
+				context.setLineWidth(2)
+				context.moveTo(160, 100)
+				context.arc(100, 100, 60, 0, 2 * Math.PI, true)
+				context.moveTo(140, 100)
+				context.arc(100, 100, 40, 0, Math.PI, false)
+				context.moveTo(85, 80)
+				context.arc(80, 80, 5, 0, 2 * Math.PI, true)
+				context.moveTo(125, 80)
+				context.arc(120, 80, 5, 0, 2 * Math.PI, true)
+				context.stroke()
+				context.draw(false, function() {
+					console.log("draw complete");
+				})
+				context.fillRect(0, 0, 150, 100)
+				context.draw(true)
+			},
+			handleCircularGradient() {
+				var ctx = this.context;
+				// Create circular gradient
+				const grd2 = ctx.createCircularGradient(75, 50, 50)
+				grd2.addColorStop(0, 'red')
+				grd2.addColorStop(1, 'white')
+				ctx.setFillStyle(grd2)
+				ctx.fillRect(10, 10, 150, 80)
+				ctx.draw(false)
+			},
+			handleLinearGradient() {
+				var ctx = this.context;
+				// Create linear gradient
+				const grd = ctx.createLinearGradient(0, 0, 200, 0)
+				grd.addColorStop(0, 'red')
+				grd.addColorStop(1, 'white')
+				// Fill with gradient
+				ctx.setFillStyle(grd)
+				ctx.fillRect(10, 10, 500, 280)
+				ctx.draw()
+			},
+			handleArc() {
+				console.log("handleViewappear");
+				var ctx = this.context;
+				ctx.arc(100, 75, 50, 0, 2 * Math.PI)
+				ctx.setFillStyle('#EEEEEE')
+				ctx.fill()
+				ctx.draw(false)
+			},
+			handleArcTo() {
+				var ctx = this.context;
+				ctx.beginPath();
+				ctx.strokeStyle = 'red';
+				ctx.lineWidth = 5;
+				ctx.moveTo(200, 20);
+				ctx.arcTo(200, 130, 50, 20, 40);
+				ctx.stroke();
+				ctx.closePath();
+				ctx.draw(false)
+			},
+			handleBeginPath() {
+				var ctx = this.context;
+				// begin path
+				ctx.rect(10, 10, 100, 30)
+				ctx.setFillStyle('yellow')
+				ctx.fill()
+
+				// begin another path
+				ctx.beginPath()
+				ctx.rect(10, 40, 100, 30)
+
+				// only fill this rect, not in current path
+				ctx.setFillStyle('blue')
+				ctx.fillRect(10, 70, 100, 30)
+
+				ctx.rect(10, 100, 100, 30)
+
+				// it will fill current path
+				ctx.setFillStyle('red')
+				ctx.fill()
+				ctx.draw()
+			},
+			handleBezierCurveTo() {
+				var ctx = this.context;
+				ctx.beginPath()
+				ctx.moveTo(20, 20)
+				ctx.bezierCurveTo(20, 100, 200, 100, 200, 20)
+				ctx.setStrokeStyle('green')
+				ctx.stroke()
+				ctx.closePath()
+				ctx.draw(true)
+			},
+			handleClip() {
+				var ctx = this.context;
+				ctx.save()
+				ctx.beginPath()
+				ctx.arc(50, 50, 25, 0, 2 * Math.PI)
+				ctx.clip() 
+				ctx.drawImage(
+					'http://is5.mzstatic.com/image/thumb/Purple128/v4/75/3b/90/753b907c-b7fb-5877-215a-759bd73691a4/source/50x50bb.jpg',
+					25, 25)
+				ctx.closePath()
+				ctx.restore()
+				ctx.draw(false)
+			},
+			handleClearRect() {
+				var ctx = this.context;
+				ctx.setFillStyle('red')
+				ctx.fillRect(0, 0, 150, 200)
+				ctx.setFillStyle('blue')
+				ctx.fillRect(150, 0, 150, 200)
+				ctx.clearRect(10, 10, 150, 75)
+				ctx.draw()
+			},
+			
+			handleClosePath() {
+				var ctx = this.context;
+				ctx.moveTo(10, 10)
+				ctx.lineTo(100, 10)
+				ctx.lineTo(100, 100)
+				ctx.closePath()
+				ctx.stroke()
+				ctx.draw()
+			},
+			handleCreatePattern() {
+				var ctx = this.context;
+				const pattern = ctx.createPattern(
+					'http://is5.mzstatic.com/image/thumb/Purple128/v4/75/3b/90/753b907c-b7fb-5877-215a-759bd73691a4/source/50x50bb.jpg',
+					'repeat-x')
+				ctx.fillStyle = pattern
+				ctx.fillRect(0, 0, 300, 150)
+				ctx.draw()
+			},
+			handleDrawImage() {
+				var ctx = this.context;
+				ctx.drawImage('https://img-cdn-qiniu.dcloud.net.cn/uniapp/doc/uni-ios.png', 0, 0, 200, 300)
+				ctx.draw()
+			},
+			handleFill() {
+				var ctx = this.context;
+				ctx.moveTo(10, 10)
+				ctx.lineTo(100, 10)
+				ctx.lineTo(100, 100)
+				ctx.fill()
+				ctx.draw()
+			},
+			handleFillRect() {
+				var ctx = this.context;
+				ctx.setFillStyle('red')
+				ctx.fillRect(10, 10, 150, 75)
+				ctx.draw()
+			},
+			handleFillText() {
+				var ctx = this.context;
+				ctx.setFontSize(20)
+				ctx.fillText('Hello', 20, 20)
+				ctx.fillText('DCloud', 100, 100)
+				ctx.draw(true)
+			},
+			handleQuadraticCurveTo() {
+				var ctx = this.context;
+				ctx.beginPath()
+				ctx.arc(20, 20, 2, 0, 2 * Math.PI)
+				ctx.setFillStyle('red')
+				ctx.fill()
+
+				ctx.beginPath()
+				ctx.arc(200, 20, 2, 0, 2 * Math.PI)
+				ctx.setFillStyle('lightgreen')
+				ctx.fill()
+
+				ctx.beginPath()
+				ctx.arc(20, 100, 2, 0, 2 * Math.PI)
+				ctx.setFillStyle('blue')
+				ctx.fill()
+
+				ctx.setFillStyle('black')
+				ctx.setFontSize(12)
+
+				// Draw guides
+				ctx.beginPath()
+				ctx.moveTo(20, 20)
+				ctx.lineTo(20, 100)
+				ctx.lineTo(200, 20)
+				ctx.setStrokeStyle('#AAAAAA')
+				ctx.stroke()
+
+				// Draw quadratic curve
+				ctx.beginPath()
+				ctx.moveTo(20, 20)
+				ctx.quadraticCurveTo(20, 100, 200, 20)
+				ctx.setStrokeStyle('black')
+				ctx.stroke()
+
+				ctx.draw()
+			},
+			handleLine() {
+				var ctx = this.context;
+				ctx.setStrokeStyle("red");
+				ctx.beginPath()
+				ctx.moveTo(10, 10)
+				ctx.lineTo(150, 10)
+				ctx.stroke()
+
+				ctx.beginPath()
+				ctx.setLineWidth(5)
+				ctx.moveTo(10, 30)
+				ctx.lineTo(150, 30)
+				ctx.stroke()
+
+				ctx.beginPath()
+				ctx.setLineWidth(10)
+				ctx.moveTo(10, 50)
+				ctx.lineTo(150, 50)
+				ctx.stroke()
+
+				ctx.beginPath()
+				ctx.setLineWidth(15)
+				ctx.moveTo(10, 70)
+				ctx.lineTo(150, 70)
+				ctx.stroke()
+
+				ctx.draw()
+			},
+			handleMiterLimit() {
+				var ctx = this.context;
+				ctx.setStrokeStyle("red");
+				ctx.beginPath()
+				ctx.setLineWidth(10)
+				ctx.setLineJoin('miter')
+				ctx.setMiterLimit(1)
+				ctx.moveTo(10, 10)
+				ctx.lineTo(100, 50)
+				ctx.lineTo(10, 90)
+				ctx.stroke()
+
+				ctx.beginPath()
+				ctx.setLineWidth(10)
+				ctx.setLineJoin('miter')
+				ctx.setMiterLimit(2)
+				ctx.moveTo(50, 10)
+				ctx.lineTo(140, 50)
+				ctx.lineTo(50, 90)
+				ctx.stroke()
+
+				ctx.beginPath()
+				ctx.setLineWidth(10)
+				ctx.setLineJoin('miter')
+				ctx.setMiterLimit(3)
+				ctx.moveTo(90, 10)
+				ctx.lineTo(180, 50)
+				ctx.lineTo(90, 90)
+				ctx.stroke()
+
+				ctx.beginPath()
+				ctx.setLineWidth(10)
+				ctx.setLineJoin('miter')
+				ctx.setMiterLimit(4)
+				ctx.moveTo(130, 10)
+				ctx.lineTo(220, 50)
+				ctx.lineTo(130, 90)
+				ctx.stroke()
+
+				ctx.draw()
+			},
+			handleTextAlign() {
+				var ctx = this.context;
+				ctx.setStrokeStyle('red')
+				ctx.setFillStyle('green');
+				ctx.moveTo(150, 20)
+				ctx.lineTo(150, 170)
+				ctx.stroke()
+
+				ctx.setFontSize(15)
+				ctx.setTextAlign('left')
+				ctx.fillText('textAlign=left', 150, 60)
+
+				ctx.setTextAlign('center')
+				ctx.fillText('textAlign=center', 150, 80)
+
+				ctx.setTextAlign('right')
+				ctx.fillText('textAlign=right', 150, 100)
+
+				ctx.draw()
+			},
+			handleTextBaseline() {
+				var ctx = this.context;
+				ctx.setFillStyle('green');
+				ctx.setStrokeStyle('red')
+				ctx.moveTo(5, 75)
+				ctx.lineTo(295, 75)
+				ctx.stroke()
+
+				ctx.setFontSize(20)
+
+				ctx.setTextBaseline('top')
+				ctx.fillText('top', 5, 75)
+
+				ctx.setTextBaseline('middle')
+				ctx.fillText('middle', 50, 75)
+
+				ctx.setTextBaseline('bottom')
+				ctx.fillText('bottom', 120, 75)
+
+				ctx.setTextBaseline('normal')
+				ctx.fillText('normal', 200, 75)
+
+				ctx.draw()
+			},
+			touchstart(event) {
+				console.log("touchstart:" + JSON.stringify(event));
+				// this.startX=event.changedTouches[0].pageX;
+				// this.startY=event.changedTouches[0].pageY;
+				// this.context.strokeStyle = "#17acf6" ;  //设置线的颜色状态
+				// this.context.lineWidth = 10;          //设置线宽状态
+			},
+			touchmove(event) {
+				console.log("touchmove:" + JSON.stringify(event));
+				// this.currentX=event.changedTouches[0].pageX;
+				// this.currentY=event.changedTouches[0].pageY;
+				// //进行绘制
+				// this.context.moveTo(this.startX,this.startY);
+				// this.context.lineTo(this.currentX,this.currentY);
+				// this.context.stroke();
+
+				// this.startX=event.changedTouches[0].pageX;
+				// this.startY=event.changedTouches[0].pageY;
+
+			},
+			touchend(event) {
+				console.log("touchend:" + JSON.stringify(event));
+			},
+		}
+	}
+</script>

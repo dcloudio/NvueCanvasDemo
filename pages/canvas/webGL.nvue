@@ -1,0 +1,119 @@
+<template>
+	<view @viewappear="handleViewappear">
+		<gcanvas ref="canvas_holder" style="width:750rpx;height:400px;"></gcanvas>
+		<view class="btn">
+			<text class="btn-text" @click="handleDraw">绘制三角形</text>
+		</view>
+	</view>
+</template>
+<style>
+	.btn {
+		flex-direction: row;
+		margin-top: 10px;
+	}
+
+	.btn-text:active {
+		background-color: #0f0;
+	}
+
+	.btn-text {
+		padding-top: 20px;
+		padding-bottom: 20px;
+		margin-left: 20px;
+		margin-right: 20px;
+		flex-direction: row;
+		background-color: #ff9537;
+
+		border-radius: 10px;
+		width: 335px;
+		text-align: center;
+		color: #fff;
+	}
+
+	.text {
+		font-size: 20;
+	}
+</style>
+<script>
+	import {
+		compile
+	} from "./compile-shader";
+
+	import {
+		enable,
+		WeexBridge,
+		Image as GImage
+	} from "../../gcanvas/index.js";
+
+	function startRaw(ref, size) {
+		var gl = ref.getContext("webgl");
+
+		const vShader =
+			`
+    precision mediump float;
+    attribute vec2 aPosition;
+    uniform vec2 offset;
+    void main() {
+      gl_Position = vec4(aPosition.x, aPosition.y + offset.x, 0, 1);
+    }`;
+		const fShader =
+			`
+    precision mediump float;
+    void main() {
+        gl_FragColor = vec4(0.5, 0.5, 0.5, 1.0);
+    }`;
+
+		const {
+			useProgram,
+			attributes,
+			uniforms,
+			fillElements,
+			drawElements,
+			createElementsBuffer
+		} = compile({
+			vShader,
+			fShader,
+			gl
+		});
+
+		fillElements(createElementsBuffer([0, 1, 2]));
+
+		gl.clearColor(0.0, 0.5, 0.5, 1.0);
+		attributes.aPosition.fill(
+			attributes.aPosition.createBuffer([0, 0.5, 0.5, -0.5, -0.5, -0.5])
+		);
+		uniforms.offset.fill([0.5, 0]);
+
+		function render() {
+			gl.clear(gl.COLOR_BUFFER_BIT);
+			drawElements(3);
+		}
+
+		render();
+		ref._swapBuffers();
+	}
+
+	export default {
+		data() {
+			return {};
+		},
+
+		onReady: function() {
+			
+		},
+		methods :{
+			handleDraw(){
+				var ref = this.$refs["canvas_holder"];
+				ref = enable(ref, {
+					debug: false,
+					bridge: WeexBridge,
+					disableAutoSwap: true
+				});
+				//ref.width = WXEnvironment.deviceWidth;
+				//ref.height = WXEnvironment.deviceWidth;
+				console.log("ref width:"+ref.width +"--ref height:"+ref.height);
+				startRaw(ref);
+			}
+		}
+	};
+</script>
