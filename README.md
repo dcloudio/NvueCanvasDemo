@@ -1,6 +1,8 @@
-### Canvas 
-uni Canvas插件基于[GCanvas](https://github.com/alibaba/GCanvas)实现了微信小程序[CanvasContext API](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.html),  W3C [WebGL API](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API),
-该工程为uni Canvas插件使用演示demo
+### 概要
+HBuilderX2.2.5（alpha）开始nvue页面支持Canvas。
+
+Canvas插件基于[GCanvas](https://github.com/alibaba/GCanvas)实现了微信小程序[CanvasContext API](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.html),  W3C [WebGL API](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API),
+此工程为uni-app项目中nvue页面使用Canvas的演示demo
 
 ### 使用
 1. 将gcanvas目录复制到HBX uniapp 工程下
@@ -83,3 +85,22 @@ strokeText|✅
 transform|✅
 translate|✅
 * WebGL请参考[https://alibaba.github.io/GCanvas/docs/WebGL.html](https://alibaba.github.io/GCanvas/docs/WebGL.html)
+
+### 云端打包
+Canvas是作为独立的模块，打包时需要选择使用Canvas模块才能正常使用相关的功能。
+需要在manifest.json的代码视图中配置如下（暂时还不支持可视化界面操作）：
+```javascript
+    "app-plus" : {
+        /* 模块配置 */
+        "modules" : {
+            "Canvas" : "nvue canvas"    //使用Canvas模块
+        },
+	//...
+    },
+    //...
+```
+保存好提交云端打包。
+
+
+
+
