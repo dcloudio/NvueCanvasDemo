@@ -105,4 +105,5 @@ Canvas是作为独立的模块，打包时需要选择使用Canvas模块才能�
 #### Android
 复制weex_gcanvas-release.aar到libs目录下，然后在build.gradle中添加依赖即可。（weex_gcanvas-release.aar位于SDK/libs目录下）
 
-
+#### iOS
+导入 对应版本离线SDK目录下 SDK/Libs/liblibWeex.a  库即可。
